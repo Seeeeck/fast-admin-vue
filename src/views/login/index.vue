@@ -42,7 +42,7 @@
         
       <el-form-item prop="code">
         <span class="svg-container">
-          <svg-icon icon-class="password" />
+          <svg-icon icon-class="captcha" />
         </span>
         <el-input
           ref="code"
@@ -55,7 +55,7 @@
           type="text"
         >
           <template #suffix>
-            <img :src="image" @click="getCaptcha"/>
+            <img style="cursor:pointer" :src="image" @click="getCaptcha"/>
           </template> 
         </el-input>
       </el-form-item>
@@ -133,7 +133,10 @@ export default {
           this.$store.dispatch('user/login', this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
-          }).catch(() => {
+          }).catch((error) => {
+            if (error.code === 1101){
+              this.getCaptcha();
+            }
             this.loading = false
           })
         } else {
