@@ -34,51 +34,62 @@
           name="password"
           tabindex="2"
           auto-complete="on"
-          @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
+        
+      <el-form-item prop="code">
+        <span class="svg-container">
+          <svg-icon icon-class="password" />
+        </span>
+        <el-input
+          ref="code"
+          v-model="loginForm.code"
+          placeholder="Captcha"
+          name="code"
+          tabindex="2"
+          auto-complete="on"
+          @keyup.enter.native="handleLogin"
+          type="text"
+        >
+          <template #suffix>
+            <img :src="image" @click="getCaptcha"/>
+          </template> 
+        </el-input>
+      </el-form-item>
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
 
     </el-form>
   </div>
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import { captcha } from "@/api/sys/captcha";
 
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+      if (value.length < 5) {
+        callback(new Error('The password can not be less than 5 digits'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: 'admin1',
+        password: 'admin',
+        key: '',
+        code: ''
       },
+      image: '',
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        username: [{ required: true, trigger: 'blur'}],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
@@ -94,7 +105,17 @@ export default {
       immediate: true
     }
   },
+  created() {
+    this.getCaptcha();
+  },
   methods: {
+    getCaptcha(){
+      captcha().then(res => {
+        const { key, image } = res.data;
+        this.loginForm.key = key;
+        this.image = image;
+      })
+    },
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''

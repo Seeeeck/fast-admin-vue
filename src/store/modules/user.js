@@ -1,12 +1,15 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout, getInfo } from '@/api/sys/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+import { resetRouter,constantRoutes } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
-    avatar: ''
+    avatar: '',
+    menus: '',
+    permissions: '',
+    routes: constantRoutes
   }
 }
 
@@ -24,15 +27,23 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_MENUS: (state, menus) => {
+    state.menus = menus
+  },
+  SET_PERMISSIONS: (state, permissions) => {
+    state.permissions = permissions
+  },
+  SET_ROUTES: (state,routes) => {
+    state.routes = constantRoutes.concat(routes)
   }
 }
 
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      login(userInfo).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
@@ -46,17 +57,20 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      getInfo().then(response => {
         const { data } = response
 
         if (!data) {
           return reject('Verification failed, please Login again.')
         }
 
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
+        const { username, avatar,menus,permissions } = data
+        menus.push({ path: '*', redirect: '/404', hidden: true })
+        commit('SET_NAME', username)
         commit('SET_AVATAR', avatar)
+        commit('SET_MENUS', menus)
+        commit('SET_PERMISSIONS', permissions)
+        
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -85,6 +99,9 @@ const actions = {
       commit('RESET_STATE')
       resolve()
     })
+  },
+  setRoutes({commit},routes){
+    commit('SET_ROUTES', routes)
   }
 }
 

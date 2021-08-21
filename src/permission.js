@@ -5,6 +5,9 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
+import Layout from '@/layout'
+
+const _import = require('./router/_import_' + process.env.NODE_ENV)
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -33,8 +36,10 @@ router.beforeEach(async(to, from, next) => {
         try {
           // get user info
           await store.dispatch('user/getInfo')
-
-          next()
+          const menus = generateRoutes(store.getters.menus)
+          store.dispatch("user/setRoutes",menus)
+          router.addRoutes(menus);
+          next({...to,replace: true})
         } catch (error) {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
@@ -46,7 +51,6 @@ router.beforeEach(async(to, from, next) => {
     }
   } else {
     /* has no token*/
-
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
       next()
@@ -62,3 +66,29 @@ router.afterEach(() => {
   // finish progress bar
   NProgress.done()
 })
+
+
+function generateRoutes(asyncRouterMap) {
+  const asyncRouters = asyncRouterMap.filter(route => {
+    if(route.type === 0 && route.children.length > 0){
+      route.redirect = 'noRedirect';
+    }
+    if(route.component){
+      if(route.component === 'Layout'){
+        route.component = Layout;
+      }else {
+        try{
+          route.component = _import(route.component)
+        }catch(error){
+          console.log(error);
+          Message.error('Please contact the administrator to modify or delete the non-existent component path.')
+        }
+      }
+    }
+    if(route.children && route.children.length){
+      route.children = generateRoutes(route.children);
+    }
+    return true;
+  })
+  return asyncRouters;
+}
