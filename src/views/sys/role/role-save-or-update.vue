@@ -103,8 +103,14 @@ export default {
     init(id) {
       this.dataForm.id = id || 0;
       this.visible = true;
-      listMenusTree().then((response) => {
+      listMenusTree({ op: "less" }).then((response) => {
         this.menuList = response.data;
+        this.menuList.filter((item) => {
+          if (!item.children || item.children.length === 0) {
+            item.disabled = true;
+          }
+          return true;
+        });
         let parentIds = [];
         this.getParentIds(this.menuList, parentIds);
         if (this.dataForm.id) {

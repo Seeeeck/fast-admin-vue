@@ -1,13 +1,5 @@
 import request from '@/utils/request'
 
-export function pageMenus(params) {
-  return request({
-    url: '/sys/menu/page',
-    method: 'get',
-    params
-  })
-}
-
 
 export function getMenu(id) {
   return request({
@@ -45,10 +37,26 @@ export function deleteMenus(ids) {
   })
 }
 
+export function deleteMenu(id) {
+  return request({
+    url: '/sys/menu/'+ id,
+    method: 'delete'
+  })
+}
 
-export function listMenusTree() {
+//'less' or 'all'
+export function listMenusTree(params) {
   return request({
     url: '/sys/menu/tree',
     method: 'get',
+    params
+  })
+}
+
+export function getParentMenu(id) {
+  return request({
+    url: '/sys/menu/parent',
+    method: 'get',
+    params: { id }
   })
 }

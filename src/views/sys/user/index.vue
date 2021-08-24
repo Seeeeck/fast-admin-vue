@@ -30,18 +30,21 @@
         label="ID">
       </el-table-column>
       <el-table-column
+        show-overflow-tooltip
         prop="username"
         header-align="center"
         align="center"
         label="用户名">
       </el-table-column>
       <el-table-column
+        show-overflow-tooltip
         prop="email"
         header-align="center"
         align="center"
         label="邮箱">
       </el-table-column>
       <el-table-column
+        show-overflow-tooltip
         prop="mobile"
         header-align="center"
         align="center"
@@ -58,10 +61,10 @@
         </template>
       </el-table-column>
       <el-table-column
+        show-overflow-tooltip
         prop="createTime"
         header-align="center"
         align="center"
-        width="180"
         label="创建时间">
       </el-table-column>
       <el-table-column

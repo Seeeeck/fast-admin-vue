@@ -3,6 +3,7 @@
     :title="!dataForm.id ? '新增' : '修改'"
     :close-on-click-modal="false"
     :visible.sync="visible"
+    @close="hanleClose"
   >
     <el-form
       :model="dataForm"
@@ -18,7 +19,7 @@
         <el-input
           v-model="dataForm.username"
           placeholder="登录帐号"
-          :disabled="dataForm.id"
+          :disabled="dataForm.id !== 0"
         ></el-input>
       </el-form-item>
       <el-form-item
@@ -167,8 +168,10 @@ export default {
     };
   },
   methods: {
+    hanleClose() {
+      this.$refs["dataForm"].resetFields();
+    },
     init(id) {
-      this.resetForm();
       this.dataForm.id = id || 0;
       listRoles().then((response) => {
         this.roleList = response.data;
@@ -183,18 +186,6 @@ export default {
         });
       }
       this.visible = true;
-    },
-    resetForm() {
-        this.dataForm = {
-        id: 0,
-        username: "",
-        password: "",
-        comfirmPassword: "",
-        email: "",
-        mobile: "",
-        roleIdList: [],
-        enable: true,
-      }
     },
     // 表单提交
     dataFormSubmit() {

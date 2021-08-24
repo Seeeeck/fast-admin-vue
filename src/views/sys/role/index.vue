@@ -30,18 +30,21 @@
         label="ID">
       </el-table-column>
       <el-table-column
+        show-overflow-tooltip
         prop="roleName"
         header-align="center"
         align="center"
         label="角色名">
       </el-table-column>
       <el-table-column
+        show-overflow-tooltip
         prop="remark"
         header-align="center"
         align="center"
         label="备注">
       </el-table-column>
       <el-table-column
+        show-overflow-tooltip
         prop="createTime"
         header-align="center"
         align="center"
