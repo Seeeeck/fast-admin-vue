@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title="!dataForm.id ? '新增' : '修改'"
+    :title="!dataForm.id ? 'Add' : 'Update'"
     :close-on-click-modal="false"
     :visible.sync="visible"
     @close="hanleClose"
@@ -10,29 +10,29 @@
       :rules="dataRule"
       ref="dataForm"
       @keyup.enter.native="dataFormSubmit()"
-      label-width="80px"
+      label-width="100px"
     >
       <el-form-item
-        label="角色名"
+        label="Role name"
         prop="roleName"
       >
         <el-input
           v-model="dataForm.roleName"
-          placeholder="角色名"
+          placeholder="Role name"
         ></el-input>
       </el-form-item>
       <el-form-item
-        label="备注"
+        label="Remark"
         prop="remark"
       >
         <el-input
           v-model="dataForm.remark"
-          placeholder="角色备注"
+          placeholder="Remark"
         ></el-input>
       </el-form-item>
       <el-form-item
         size="mini"
-        label="授权"
+        label="permission"
       >
         <el-tree
           :data="menuList"
@@ -49,11 +49,11 @@
       slot="footer"
       class="dialog-footer"
     >
-      <el-button @click="visible = false">取消</el-button>
+      <el-button @click="visible = false">Cancel</el-button>
       <el-button
         type="primary"
         @click="dataFormSubmit()"
-      >确定</el-button>
+      >Ok</el-button>
     </span>
   </el-dialog>
 </template>
@@ -77,7 +77,11 @@ export default {
       },
       dataRule: {
         roleName: [
-          { required: true, message: "角色名称不能为空", trigger: "blur" },
+          {
+            required: true,
+            message: "Role name cannot be empty",
+            trigger: "blur",
+          },
         ],
       },
     };
@@ -111,9 +115,9 @@ export default {
           }
           return true;
         });
-        let parentIds = [];
-        this.getParentIds(this.menuList, parentIds);
         if (this.dataForm.id) {
+          let parentIds = [];
+          this.getParentIds(this.menuList, parentIds);
           getRoleMenuVO(this.dataForm.id).then((response) => {
             this.dataForm.id = response.data.id;
             this.dataForm.remark = response.data.remark;
@@ -134,7 +138,6 @@ export default {
             id: this.dataForm.id || undefined,
             roleName: this.dataForm.roleName,
             remark: this.dataForm.remark,
-            //TODO
             menuIdList: [].concat(
               this.$refs.menuListTree.getCheckedKeys(),
               this.$refs.menuListTree.getHalfCheckedKeys()

@@ -1,13 +1,30 @@
 <template>
   <div class="mod-user">
-    <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
+    <el-form
+      :inline="true"
+      :model="dataForm"
+      @keyup.enter.native="getDataList()"
+    >
       <el-form-item>
-        <el-input v-model="dataForm.userName" placeholder="用户名" clearable></el-input>
+        <el-input
+          v-model="dataForm.userName"
+          placeholder="Username"
+          clearable
+        ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('sys:user:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('sys:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button @click="getDataList()">Search</el-button>
+        <el-button
+          v-if="isAuth('sys:user:save')"
+          type="primary"
+          @click="addOrUpdateHandle()"
+        >Add</el-button>
+        <el-button
+          v-if="isAuth('sys:user:delete')"
+          type="danger"
+          @click="deleteHandle()"
+          :disabled="dataListSelections.length <= 0"
+        >Batch delete</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -15,49 +32,63 @@
       border
       v-loading="dataListLoading"
       @selection-change="selectionChangeHandle"
-      style="width: 100%;">
+      style="width: 100%;"
+    >
       <el-table-column
         type="selection"
         header-align="center"
         align="center"
-        width="50">
+        width="50"
+      >
       </el-table-column>
       <el-table-column
         prop="id"
         header-align="center"
         align="center"
         width="80"
-        label="ID">
+        label="ID"
+      >
       </el-table-column>
       <el-table-column
         show-overflow-tooltip
         prop="username"
         header-align="center"
         align="center"
-        label="用户名">
+        label="Username"
+      >
       </el-table-column>
       <el-table-column
         show-overflow-tooltip
         prop="email"
         header-align="center"
         align="center"
-        label="邮箱">
+        label="Email"
+      >
       </el-table-column>
       <el-table-column
         show-overflow-tooltip
         prop="mobile"
         header-align="center"
         align="center"
-        label="手机号">
+        label="Phone number"
+      >
       </el-table-column>
       <el-table-column
         prop="enable"
         header-align="center"
         align="center"
-        label="状态">
+        label="State"
+      >
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.enable === false" size="small" type="danger">禁用</el-tag>
-          <el-tag v-else size="small">正常</el-tag>
+          <el-tag
+            v-if="scope.row.enable === false"
+            size="small"
+            type="danger"
+          >Disabled</el-tag>
+          <el-tag
+            v-else
+            size="small"
+          >Available</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -65,17 +96,29 @@
         prop="createTime"
         header-align="center"
         align="center"
-        label="创建时间">
+        label="Create time"
+      >
       </el-table-column>
       <el-table-column
         fixed="right"
         header-align="center"
         align="center"
         width="150"
-        label="操作">
+        label="Operation"
+      >
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:user:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-          <el-button v-if="isAuth('sys:user:delete')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
+          <el-button
+            v-if="isAuth('sys:user:update')"
+            type="text"
+            size="small"
+            @click="addOrUpdateHandle(scope.row.id)"
+          >Update</el-button>
+          <el-button
+            v-if="isAuth('sys:user:delete')"
+            type="text"
+            size="small"
+            @click="deleteHandle(scope.row.id)"
+          >Delete</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -86,101 +129,123 @@
       :page-sizes="[10, 20, 50, 100]"
       :page-size="pageSize"
       :total="totalPage"
-      layout="total, sizes, prev, pager, next, jumper">
+      layout="total, sizes, prev, pager, next, jumper"
+    >
     </el-pagination>
-    <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <add-or-update
+      v-if="addOrUpdateVisible"
+      ref="addOrUpdate"
+      @refreshDataList="getDataList"
+    ></add-or-update>
   </div>
 </template>
 
 <script>
-import { isAuth } from '@/utils/auth'
-import AddOrUpdate from './user-save-or-update'
-import { pageUsers,deleteUsers  } from "@/api/sys/user"
+import { isAuth } from "@/utils/auth";
+import AddOrUpdate from "./user-save-or-update";
+import { pageUsers, deleteUsers } from "@/api/sys/user";
 export default {
-    data () {
-      return {
-        dataForm: {
-          userName: ''
-        },
-        dataList: [],
-        pageIndex: 1,
-        pageSize: 10,
-        totalPage: 0,
-        dataListLoading: false,
-        dataListSelections: [],
-        addOrUpdateVisible: false
+  data() {
+    return {
+      dataForm: {
+        userName: "",
+      },
+      dataList: [],
+      pageIndex: 1,
+      pageSize: 10,
+      totalPage: 0,
+      dataListLoading: false,
+      dataListSelections: [],
+      addOrUpdateVisible: false,
+    };
+  },
+  components: {
+    AddOrUpdate,
+  },
+  created() {
+    this.getDataList();
+  },
+  methods: {
+    // 获取数据列表
+    getDataList() {
+      if (isAuth("sys:user:page")) {
+        this.dataListLoading = true;
+        pageUsers({
+          page: this.pageIndex,
+          size: this.pageSize,
+          username: this.dataForm.userName,
+        })
+          .then((response) => {
+            this.dataList = response.data.list;
+            this.totalPage = response.data.totalCount;
+            this.dataListLoading = false;
+          })
+          .catch((error) => {
+            this.dataList = [];
+            this.totalPage = 0;
+            this.dataListLoading = false;
+          });
+      } else {
+        this.$message.error(
+          "You don't have required permission to perform this action."
+        );
       }
     },
-    components: {
-      AddOrUpdate
+    // 每页数
+    sizeChangeHandle(val) {
+      this.pageSize = val;
+      this.pageIndex = 1;
+      this.getDataList();
     },
-    created () {
-      this.getDataList()
+    // 当前页
+    currentChangeHandle(val) {
+      this.pageIndex = val;
+      this.getDataList();
     },
-    methods: {
-      // 获取数据列表
-      getDataList () {
-        this.dataListLoading = true
-        pageUsers({
-          'page': this.pageIndex,
-          'size': this.pageSize,
-          'username': this.dataForm.userName
-        }).then(response => {
-          this.dataList = response.data.list
-          this.totalPage = response.data.totalCount
-          this.dataListLoading = false
-        }).catch(error => {
-          this.dataList = []
-          this.totalPage = 0
-          this.dataListLoading = false
-        })
-      },
-      // 每页数
-      sizeChangeHandle (val) {
-        this.pageSize = val
-        this.pageIndex = 1
-        this.getDataList()
-      },
-      // 当前页
-      currentChangeHandle (val) {
-        this.pageIndex = val
-        this.getDataList()
-      },
-      // 多选
-      selectionChangeHandle (val) {
-        this.dataListSelections = val
-      },
-      // 新增 / 修改
-      addOrUpdateHandle (id) {
-        this.addOrUpdateVisible = true
-        this.$nextTick(() => {
-          this.$refs.addOrUpdate.init(id)
-        })
-      },
-      // 删除
-      deleteHandle (id) {
-        var userIds = id ? [id] : this.dataListSelections.map(item => {
-          return item.id;
-        })
-        this.$confirm(`Do you want to delete [id=${userIds.join(',')}]?`, 'Delete', {
-          confirmButtonText: 'Yes',
-          cancelButtonText: 'No',
-          type: 'warning'
-        }).then(() => {
-          deleteUsers(userIds).then(response => {
-            this.$message({
-                message: 'Sucess.',
-                type: 'success',
-                duration: 1500,
+    // 多选
+    selectionChangeHandle(val) {
+      this.dataListSelections = val;
+    },
+    // 新增 / 修改
+    addOrUpdateHandle(id) {
+      this.addOrUpdateVisible = true;
+      this.$nextTick(() => {
+        this.$refs.addOrUpdate.init(id);
+      });
+    },
+    // 删除
+    deleteHandle(id) {
+      var userIds = id
+        ? [id]
+        : this.dataListSelections.map((item) => {
+            return item.id;
+          });
+      this.$confirm(
+        `Do you want to delete [id=${userIds.join(",")}]?`,
+        "Delete",
+        {
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          deleteUsers(userIds)
+            .then((response) => {
+              this.$message({
+                message: "Sucess.",
+                type: "success",
+                duration: 1000,
                 onClose: () => {
-                  this.getDataList()
-                }
-              })
-          }).catch(() => {});
-        }).catch(() => {});
-      },
-      isAuth,
-    }
-  }
+                  this.getDataList();
+                },
+              });
+            })
+            .catch(() => {});
+        })
+        .catch(() => {});
+    },
+    isAuth,
+  },
+};
 </script>

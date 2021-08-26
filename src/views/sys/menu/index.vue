@@ -9,7 +9,7 @@
           v-if="isAuth('sys:menu:save')"
           type="primary"
           @click="addOrUpdateHandle()"
-        >新增</el-button>
+        >Add</el-button>
       </el-form-item>
     </el-form>
 
@@ -23,7 +23,7 @@
         prop="name"
         header-align="center"
         min-width="150"
-        label="名称"
+        label="Name"
       >
       </el-table-column>
       <el-table-column
@@ -31,14 +31,14 @@
         header-align="center"
         align="center"
         width="120"
-        label="上级菜单"
+        label="Parent Menu"
       >
       </el-table-column>
       <el-table-column
         header-align="center"
         align="center"
         width="60"
-        label="图标"
+        label="Icon"
       >
         <template slot-scope="scope">
           <svg-icon :icon-class="scope.row.icon || ''" />
@@ -47,25 +47,25 @@
       <el-table-column
         prop="type"
         header-align="center"
-        width="80"
+        width="100"
         align="center"
-        label="类型"
+        label="Type"
       >
         <template slot-scope="scope">
           <el-tag
             v-if="scope.row.type === 0"
             size="small"
-          >目录</el-tag>
+          >Catelog</el-tag>
           <el-tag
             v-else-if="scope.row.type === 1"
             size="small"
             type="success"
-          >菜单</el-tag>
+          >Menu</el-tag>
           <el-tag
             v-else-if="scope.row.type === 2"
             size="small"
             type="info"
-          >按钮</el-tag>
+          >Button</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -73,7 +73,7 @@
         header-align="center"
         width="80"
         align="center"
-        label="排序号"
+        label="Order"
       >
       </el-table-column>
       <el-table-column
@@ -82,7 +82,7 @@
         align="center"
         width="150"
         show-overflow-tooltip
-        label="菜单Path"
+        label="Menu path"
       >
       </el-table-column>
       <el-table-column
@@ -91,7 +91,7 @@
         align="center"
         min-width="150"
         show-overflow-tooltip
-        label="授权标识"
+        label="Permission"
       >
       </el-table-column>
       <el-table-column
@@ -99,7 +99,7 @@
         header-align="center"
         align="center"
         width="150"
-        label="操作"
+        label="Operation"
       >
         <template slot-scope="scope">
           <el-button
@@ -107,17 +107,16 @@
             type="text"
             size="small"
             @click="addOrUpdateHandle(scope.row.id)"
-          >修改</el-button>
+          >Update</el-button>
           <el-button
             v-if="isAuth('sys:menu:delete') && !(scope.row.children && scope.row.children.length > 0)"
             type="text"
             size="small"
             @click="deleteHandle(scope.row.id)"
-          >删除</el-button>
+          >Delete</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <!-- 弹窗, 新增 / 修改 -->
     <add-or-update
       v-if="addOrUpdateVisible"
       ref="addOrUpdate"
@@ -148,13 +147,19 @@ export default {
   methods: {
     // 获取数据列表
     getDataList() {
-      this.dataListLoading = true;
-      listMenusTree({op:"all"})
-        .then((response) => {
-          this.dataList = response.data;
-          this.dataListLoading = false;
-        })
-        .catch(() => (this.dataListLoading = false));
+      if (isAuth("sys:menu:tree")) {
+        this.dataListLoading = true;
+        listMenusTree({ op: "all" })
+          .then((response) => {
+            this.dataList = response.data;
+            this.dataListLoading = false;
+          })
+          .catch(() => (this.dataListLoading = false));
+      } else {
+        this.$message.error(
+          "You don't have required permission to perform this action."
+        );
+      }
     },
     // 新增 / 修改
     addOrUpdateHandle(id) {
@@ -174,9 +179,9 @@ export default {
           deleteMenu(id)
             .then((response) => {
               this.$message({
-                message: "Sucess.",
+                message: "Success",
                 type: "success",
-                duration: 1500,
+                duration: 1000,
                 onClose: () => {
                   this.getDataList();
                 },
