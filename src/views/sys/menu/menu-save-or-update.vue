@@ -2,7 +2,6 @@
   <el-dialog
     :title="!dataForm.id ? 'Add' : 'Update'"
     :close-on-click-modal="false"
-    @close="hanleClose"
     :visible.sync="visible"
   >
     <el-form
@@ -234,26 +233,13 @@ export default {
       .map((icon) => icon.substring(2, icon.length - 4));
   },
   methods: {
-    hanleClose() {
-      this.dataForm = {
-        id: 0,
-        type: 1,
-        name: "",
-        parentId: 0,
-        parentName: "Top menu",
-        path: "",
-        perms: "",
-        orderNum: 0,
-        icon: "",
-        hidden: false,
-      };
-    },
     init(id) {
       this.dataForm.id = id || 0;
       listMenusTree({ op: "less", noButtonType: true }).then((response) => {
         this.visible = true;
         this.menuList[0].children = response.data;
         this.$nextTick(() => {
+          this.$refs['dataForm'].resetFields();
           if (this.dataForm.id) {
             getMenu(id).then((response) => {
               this.dataForm.id = response.data.id;

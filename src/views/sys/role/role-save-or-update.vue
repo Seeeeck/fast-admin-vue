@@ -3,7 +3,6 @@
     :title="!dataForm.id ? 'Add' : 'Update'"
     :close-on-click-modal="false"
     :visible.sync="visible"
-    @close="hanleClose"
   >
     <el-form
       :model="dataForm"
@@ -87,10 +86,6 @@ export default {
     };
   },
   methods: {
-    hanleClose() {
-      this.$refs["dataForm"].resetFields();
-      this.$refs.menuListTree.setCheckedKeys([]);
-    },
     filterLeafNodes(menuIdList, parentIds) {
       return menuIdList.filter((item) => {
         return !parentIds.includes(item);
@@ -115,18 +110,22 @@ export default {
           }
           return true;
         });
-        if (this.dataForm.id) {
-          let parentIds = [];
-          this.getParentIds(this.menuList, parentIds);
-          getRoleMenuVO(this.dataForm.id).then((response) => {
-            this.dataForm.id = response.data.id;
-            this.dataForm.remark = response.data.remark;
-            this.dataForm.roleName = response.data.roleName;
-            this.$refs.menuListTree.setCheckedKeys(
-              this.filterLeafNodes(response.data.menuIdList, parentIds)
-            );
-          });
-        }
+        this.$nextTick(() => {
+          this.$refs["dataForm"].resetFields();
+          this.$refs.menuListTree.setCheckedKeys([]);
+          if (this.dataForm.id) {
+            let parentIds = [];
+            this.getParentIds(this.menuList, parentIds);
+            getRoleMenuVO(this.dataForm.id).then((response) => {
+              this.dataForm.id = response.data.id;
+              this.dataForm.remark = response.data.remark;
+              this.dataForm.roleName = response.data.roleName;
+              this.$refs.menuListTree.setCheckedKeys(
+                this.filterLeafNodes(response.data.menuIdList || [], parentIds)
+              );
+            });
+          }
+        });
       });
     },
 
@@ -138,7 +137,7 @@ export default {
             id: this.dataForm.id || undefined,
             roleName: this.dataForm.roleName,
             remark: this.dataForm.remark,
-            menuIdList: [].concat(
+            menuIds: [].concat(
               this.$refs.menuListTree.getCheckedKeys(),
               this.$refs.menuListTree.getHalfCheckedKeys()
             ),

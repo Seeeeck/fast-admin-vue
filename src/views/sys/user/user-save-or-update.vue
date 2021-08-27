@@ -3,7 +3,6 @@
     :title="!dataForm.id ? 'Add' : 'Update'"
     :close-on-click-modal="false"
     :visible.sync="visible"
-    @close="hanleClose"
   >
     <el-form
       :model="dataForm"
@@ -16,11 +15,13 @@
         label="Username"
         prop="username"
       >
+        <span style="font-size:20px;padding-left:10px" v-if="dataForm.id !== 0">{{dataForm.username}}</span>
         <el-input
           v-model="dataForm.username"
           placeholder="Username"
-          :disabled="dataForm.id !== 0"
+          v-else
         ></el-input>
+        
       </el-form-item>
       <el-form-item
         label="Password"
@@ -176,24 +177,24 @@ export default {
     };
   },
   methods: {
-    hanleClose() {
-      this.$refs["dataForm"].resetFields();
-    },
     init(id) {
       this.dataForm.id = id || 0;
       listRoles().then((response) => {
         this.roleList = response.data;
-      });
-      if (this.dataForm.id) {
-        getUserRoleVO(this.dataForm.id).then((response) => {
-          this.dataForm.username = response.data.username;
-          this.dataForm.email = response.data.email;
-          this.dataForm.mobile = response.data.mobile;
-          this.dataForm.roleIdList = response.data.roleIdList;
-          this.dataForm.enable = response.data.enable;
+        this.visible = true;
+        this.$nextTick(() => {
+          this.$refs["dataForm"].resetFields();
+          if (this.dataForm.id) {
+            getUserRoleVO(this.dataForm.id).then((response) => {
+              this.dataForm.username = response.data.username;
+              this.dataForm.email = response.data.email;
+              this.dataForm.mobile = response.data.mobile;
+              this.dataForm.roleIdList = response.data.roleIdList || [];
+              this.dataForm.enable = response.data.enable;
+            });
+          }
         });
-      }
-      this.visible = true;
+      });
     },
     // 表单提交
     dataFormSubmit() {
@@ -206,7 +207,7 @@ export default {
             email: this.dataForm.email,
             mobile: this.dataForm.mobile,
             enable: this.dataForm.enable,
-            roleIdList: this.dataForm.roleIdList,
+            roleIds: this.dataForm.roleIdList,
           };
           if (!this.dataForm.id) {
             saveUser(user)

@@ -11,7 +11,7 @@ export function pageLogs(params) {
 
 export function deleteLogs(ids) {
   return request({
-    url: '/sys/role/batch',
+    url: '/sys/log/batch',
     method: 'delete',
     params: {
       ids
