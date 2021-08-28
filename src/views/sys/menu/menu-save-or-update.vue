@@ -287,7 +287,7 @@ export default {
       this.$refs["dataForm"].validate((valid) => {
         if (valid) {
           let menu = {
-            id: this.dataForm.id,
+            id: this.dataForm.id || undefined,
             type: this.dataForm.type,
             name: this.dataForm.name,
             parentId: this.dataForm.parentId,
