@@ -15,7 +15,7 @@
         label="Type"
         prop="type"
       >
-        <el-radio-group v-model="dataForm.type" :disabled="dataForm.id">
+        <el-radio-group v-model="dataForm.type" :disabled="dataForm.id !== 0">
           <el-radio
             v-for="(type, index) in typeList"
             :label="index"
@@ -169,7 +169,6 @@ import {
   updateMenu,
   saveMenu,
   getMenu,
-  getParentMenu,
 } from "@/api/sys/menu";
 export default {
   data() {
@@ -262,10 +261,10 @@ export default {
     menuListTreeCurrentChangeHandle(data, node) {
       this.dataForm.parentId = data.id;
       this.dataForm.parentName = data.name;
-      getParentMenu(data.id)
+      getMenu(data.id)
         .then((response) => {
           if (response.data && response.data.path) {
-            this.dataForm.path = response.data.path;
+            this.dataForm.path = response.data.path + "/";
           } else {
             this.dataForm.path = "";
           }
