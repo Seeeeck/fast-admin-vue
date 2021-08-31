@@ -6,7 +6,7 @@
     >
       <el-form-item>
         <el-button
-          v-if="isAuth('sys:menu:save')"
+          v-if="auth.create"
           type="primary"
           @click="addOrUpdateHandle()"
         >Add</el-button>
@@ -103,13 +103,13 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="isAuth('sys:menu:update')"
+            v-if="auth.update"
             type="text"
             size="small"
             @click="addOrUpdateHandle(scope.row.id)"
           >Update</el-button>
           <el-button
-            v-if="isAuth('sys:menu:delete') && !(scope.row.children && scope.row.children.length > 0)"
+            v-if="auth.delete && !(scope.row.children && scope.row.children.length > 0)"
             type="text"
             size="small"
             @click="deleteHandle(scope.row.id)"
@@ -136,6 +136,12 @@ export default {
       dataList: [],
       dataListLoading: false,
       addOrUpdateVisible: false,
+      auth: {
+        read: this.isAuth('sys:menu:tree'),
+        create: this.isAuth('sys:menu:save'),
+        update: this.isAuth('sys:menu:update'),
+        delete: this.isAuth('sys:menu:delete')
+      }
     };
   },
   components: {
@@ -147,7 +153,7 @@ export default {
   methods: {
     // 获取数据列表
     getDataList() {
-      if (isAuth("sys:menu:tree")) {
+      if (this.auth.read) {
         this.dataListLoading = true;
         listMenusTree({ op: "all" })
           .then((response) => {

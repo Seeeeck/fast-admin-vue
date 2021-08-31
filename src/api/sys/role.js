@@ -55,7 +55,7 @@ export function listRoles() {
 
 export function getRoleMenuVO(id) {
   return request({
-    url: '/sys/role/role_menu/'+ id,
+    url: '/sys/role/role-menu/'+ id,
     method: 'get',
   })
 }

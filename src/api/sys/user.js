@@ -40,7 +40,7 @@ export function getUser(id){
 
 export function getUserRoleVO(id){
   return request({
-    url: '/sys/user/user_role/'+id,
+    url: '/sys/user/user-role/'+id,
     method: 'get',
   })
 }

@@ -67,7 +67,7 @@ export function resumeScheduleJobs(ids) {
 
 export function pageScheduleJobLogs(params) {
     return request({
-        url: '/sys/scheduleLog/page',
+        url: '/sys/schedule-log/page',
         method: 'get',
         params
     })

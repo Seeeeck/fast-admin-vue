@@ -15,36 +15,36 @@
       <el-form-item>
         <el-button @click="getDataList()">Search</el-button>
         <el-button
-          v-if="isAuth('sys:schedule:save')"
+          v-if="auth.create"
           type="primary"
           @click="addOrUpdateHandle()"
         >Add</el-button>
         <el-button
-          v-if="isAuth('sys:schedule:delete')"
+          v-if="auth.delete"
           type="danger"
           @click="deleteHandle()"
           :disabled="dataListSelections.length <= 0"
         >Batch delete</el-button>
         <el-button
-          v-if="isAuth('sys:schedule:run')"
+          v-if="auth.run"
           type="info"
           @click="runHandle()"
           :disabled="dataListSelections.length <= 0"
         >Batch run</el-button>
         <el-button
-          v-if="isAuth('sys:schedule:pause')"
+          v-if="auth.pause"
           type="info"
           @click="pauseHandle()"
           :disabled="dataListSelections.length <= 0"
         >Batch pause</el-button>
         <el-button
-          v-if="isAuth('sys:schedule:resume')"
+          v-if="auth.resume"
           type="info"
           @click="resumeHandle()"
           :disabled="dataListSelections.length <= 0"
         >Batch resume</el-button>
         <el-button
-          v-if="isAuth('sys:schedule:log')"
+          v-if="auth.log"
           type="success"
           @click="logHandle()"
         >Job log</el-button>
@@ -101,7 +101,7 @@
       >
         <template #default="scope">
           <el-switch
-            v-if="isAuth('sys:schedule:pause') && isAuth('sys:schedule:resume')"
+            v-if="auth.pause && auth.resume"
             v-model="scope.row.status"
             :active-value="0"
             :inactive-value="1"
@@ -139,19 +139,19 @@
           <el-button
             type="text"
             size="small"
-            v-if="isAuth('sys:schedule:run')"
+            v-if="auth.run"
             @click="runHandle(scope.row.id)"
           >Run</el-button>
           <el-button
             type="text"
             size="small"
-            v-if="isAuth('sys:schedule:update')"
+            v-if="auth.update"
             @click="addOrUpdateHandle(scope.row.id)"
           >Update</el-button>
           <el-button
             type="text"
             size="small"
-            v-if="isAuth('sys:schedule:delete')"
+            v-if="auth.delete"
             @click="deleteHandle(scope.row.id)"
           >Delete</el-button>
         </template>
@@ -205,6 +205,16 @@ export default {
       dataListSelections: [],
       addOrUpdateVisible: false,
       jobLogVisible: false,
+      auth: {
+        read: this.isAuth('sys:schedule:page'),
+        create: this.isAuth('sys:schedule:save'),
+        update: this.isAuth('sys:schedule:update'),
+        delete: this.isAuth('sys:schedule:delete'),
+        run: this.isAuth('sys:schedule:run'),
+        pause: this.isAuth('sys:schedule:pause'),
+        resume: this.isAuth('sys:schedule:resume'),
+        log: this.isAuth('sys:schedule:log')
+      }
     };
   },
   components: {
@@ -216,7 +226,7 @@ export default {
   },
   methods: {
     getDataList() {
-      if (isAuth("sys:schedule:page")) {
+      if (this.auth.read) {
         this.dataListLoading = true;
         pageScheduleJobs({
           page: this.pageIndex,

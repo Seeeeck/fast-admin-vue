@@ -15,12 +15,12 @@
       <el-form-item>
         <el-button @click="getDataList()">Search</el-button>
         <el-button
-          v-if="isAuth('sys:role:save')"
+          v-if="auth.save"
           type="primary"
           @click="addOrUpdateHandle()"
         >Add</el-button>
         <el-button
-          v-if="isAuth('sys:role:delete')"
+          v-if="auth.delete"
           type="danger"
           @click="deleteHandle()"
           :disabled="dataListSelections.length <= 0"
@@ -82,13 +82,13 @@
       >
         <template slot-scope="scope">
           <el-button
-            v-if="isAuth('sys:role:update')"
+            v-if="auth.update"
             type="text"
             size="small"
             @click="addOrUpdateHandle(scope.row.id)"
           >Update</el-button>
           <el-button
-            v-if="isAuth('sys:role:delete')"
+            v-if="auth.delete"
             type="text"
             size="small"
             @click="deleteHandle(scope.row.id)"
@@ -131,6 +131,12 @@ export default {
       dataListLoading: false,
       dataListSelections: [],
       addOrUpdateVisible: false,
+      auth: {
+        read: this.isAuth('sys:role:page'),
+        create: this.isAuth('sys:role:save'),
+        update: this.isAuth('sys:role:update'),
+        delete: this.isAuth('sys:role:delete')
+      }
     };
   },
   components: {
@@ -142,12 +148,12 @@ export default {
   methods: {
     // 获取数据列表
     getDataList() {
-      if (isAuth("sys:role:page")) {
+      if (this.auth.read) {
         this.dataListLoading = true;
         pageRoles({
           page: this.pageIndex,
           size: this.pageSize,
-          username: this.dataForm.roleName,
+          roleName: this.dataForm.roleName,
         })
           .then((response) => {
             this.dataList = response.data.list;
