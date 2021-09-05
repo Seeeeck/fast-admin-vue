@@ -7,7 +7,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <img :src="avatarUrl" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -19,12 +19,19 @@
           <a target="_blank" href="https://github.com/Seeeeck/fast-admin-vue">
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
+          <el-dropdown-item divided @click.native="updateProfile">
+            <span style="display:block;">Update Profile</span>
+          </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <user-update 
+      v-if="userUpdateVisible"
+      @resetAvatar="handleResetAvatar"
+      ref="userUpdate" />
   </div>
 </template>
 
@@ -32,11 +39,19 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import UserUpdate from './user-update'
 
 export default {
+  data(){
+    return {
+      userUpdateVisible: false,
+      avatarUrl: "",
+    }
+  },
   components: {
     Breadcrumb,
-    Hamburger
+    Hamburger,
+    UserUpdate
   },
   computed: {
     ...mapGetters([
@@ -44,13 +59,32 @@ export default {
       'avatar'
     ])
   },
+  mounted(){
+    this.handleAvatars();
+  },
   methods: {
+    handleResetAvatar(){
+      this.$store.dispatch("user/getInfo").then(res => {
+        this.handleAvatars();
+      })
+    },
+    handleAvatars(){
+      let imgs = require.context("@/assets/avatar/", false, /.(png|jpg|gif)$/);
+      let key = imgs.keys().find(key => "@/assets/avatar/"+key.substring(2) === this.avatar);
+      this.avatarUrl = imgs(key);
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    updateProfile(){
+      this.userUpdateVisible = true;
+      this.$nextTick(() => {
+        this.$refs.userUpdate.init();
+      });
     }
   }
 }

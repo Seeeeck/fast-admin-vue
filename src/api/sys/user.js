@@ -63,6 +63,14 @@ export function updateUser(data){
   })
 }
 
+export function updateOwn(data){
+  return request({
+    url: '/sys/user/own',
+    method: 'put',
+    data
+  })
+}
+
 
 export function deleteUsers(ids){
   return request({

@@ -9,7 +9,8 @@ const getDefaultState = () => {
     avatar: '',
     menus: '',
     permissions: '',
-    routes: constantRoutes
+    routes: constantRoutes,
+    id: '',
   }
 }
 
@@ -36,7 +37,10 @@ const mutations = {
   },
   SET_ROUTES: (state,routes) => {
     state.routes = constantRoutes.concat(routes)
-  }
+  },
+  SET_ID: (state, id) => {
+    state.id = id
+  },
 }
 
 const actions = {
@@ -64,13 +68,14 @@ const actions = {
           return reject('Verification failed, please Login again.')
         }
 
-        const { username, avatar,menus,permissions } = data
+        const { id,username, avatar,menus,permissions } = data
         menus.push({ path: '*', redirect: '/404', hidden: true })
         commit('SET_NAME', username)
         commit('SET_AVATAR', avatar)
         commit('SET_MENUS', menus)
         commit('SET_PERMISSIONS', permissions)
-        
+        commit('SET_ID', id)
+
         resolve(data)
       }).catch(error => {
         reject(error)
