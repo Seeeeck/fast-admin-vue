@@ -1,7 +1,5 @@
 # fast-admin-vue
 
-English | [简体中文](./README-zh.md)
-
 > A minimal vue admin template with Element UI & axios & iconfont & permission control & lint
 
 
@@ -54,10 +52,20 @@ npm run lint -- --fix
 Refer to [Documentation](https://panjiachen.github.io/vue-element-admin-site/guide/essentials/deploy.html) for more information
 
 ## Demo
-
-![demo](https://github.com/PanJiaChen/PanJiaChen.github.io/blob/master/images/demo.gif)
-
-
+### Overview
+![overview](https://github.com/Seeeeck/fast-admin-vue/blob/master/demo-img/overview.gif)
+### Login
+![login](https://github.com/Seeeeck/fast-admin-vue/blob/master/demo-img/login.gif)
+### Details
+Using **Role-Based Access Control** to manage the system.
+![user](https://github.com/Seeeeck/fast-admin-vue/blob/master/demo-img/user.gif)
+![role](https://github.com/Seeeeck/fast-admin-vue/blob/master/demo-img/role.gif)
+![menu](https://github.com/Seeeeck/fast-admin-vue/blob/master/demo-img/menu.gif)
+![profile](https://github.com/Seeeeck/fast-admin-vue/blob/master/demo-img/profile.gif)
+## Dynamic routing
+Dynamically display menus through roles.
+![admin1](https://github.com/Seeeeck/fast-admin-vue/blob/master/demo-img/admin1.png)
+![admin11](https://github.com/Seeeeck/fast-admin-vue/blob/master/demo-img/admin11.png)
 ## Browsers support
 
 Modern browsers and Internet Explorer 10+.
