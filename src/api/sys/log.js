@@ -8,7 +8,6 @@ export function pageLogs(params) {
   })
 }
 
-
 export function deleteLogs(ids) {
   return request({
     url: '/sys/log/batch',

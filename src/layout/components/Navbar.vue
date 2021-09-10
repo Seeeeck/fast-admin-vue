@@ -28,10 +28,11 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <user-update 
+    <user-update
       v-if="userUpdateVisible"
+      ref="userUpdate"
       @resetAvatar="handleResetAvatar"
-      ref="userUpdate" />
+    />
   </div>
 </template>
 
@@ -42,16 +43,16 @@ import Hamburger from '@/components/Hamburger'
 import UserUpdate from './user-update'
 
 export default {
-  data(){
-    return {
-      userUpdateVisible: false,
-      avatarUrl: "",
-    }
-  },
   components: {
     Breadcrumb,
     Hamburger,
     UserUpdate
+  },
+  data() {
+    return {
+      userUpdateVisible: false,
+      avatarUrl: ''
+    }
   },
   computed: {
     ...mapGetters([
@@ -59,19 +60,19 @@ export default {
       'avatar'
     ])
   },
-  mounted(){
-    this.handleAvatars();
+  mounted() {
+    this.handleAvatars()
   },
   methods: {
-    handleResetAvatar(){
-      this.$store.dispatch("user/getInfo").then(res => {
-        this.handleAvatars();
+    handleResetAvatar() {
+      this.$store.dispatch('user/getInfo').then(res => {
+        this.handleAvatars()
       })
     },
-    handleAvatars(){
-      let imgs = require.context("@/assets/avatar/", false, /.(png|jpg|gif)$/);
-      let key = imgs.keys().find(key => "@/assets/avatar/"+key.substring(2) === this.avatar);
-      this.avatarUrl = imgs(key);
+    handleAvatars() {
+      const imgs = require.context('@/assets/avatar/', false, /.(png|jpg|gif)$/)
+      const key = imgs.keys().find(key => '@/assets/avatar/' + key.substring(2) === this.avatar)
+      this.avatarUrl = imgs(key)
     },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
@@ -80,11 +81,11 @@ export default {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
-    updateProfile(){
-      this.userUpdateVisible = true;
+    updateProfile() {
+      this.userUpdateVisible = true
       this.$nextTick(() => {
-        this.$refs.userUpdate.init();
-      });
+        this.$refs.userUpdate.init()
+      })
     }
   }
 }

@@ -37,9 +37,9 @@ router.beforeEach(async(to, from, next) => {
           // get user info
           await store.dispatch('user/getInfo')
           const menus = generateRoutes(store.getters.menus)
-          store.dispatch("user/setRoutes",menus)
-          router.addRoutes(menus);
-          next({...to,replace: true})
+          store.dispatch('user/setRoutes', menus)
+          router.addRoutes(menus)
+          next({ ...to, replace: true })
         } catch (error) {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
@@ -66,28 +66,27 @@ router.afterEach(() => {
   NProgress.done()
 })
 
-
 function generateRoutes(asyncRouterMap) {
   const asyncRouters = asyncRouterMap.filter(route => {
-    if(route.type === 0 && route.children.length > 0){
-      route.redirect = 'noRedirect';
+    if (route.type === 0 && route.children.length > 0) {
+      route.redirect = 'noRedirect'
     }
-    if(route.component){
-      if(route.component === 'Layout'){
-        route.component = Layout;
-      }else {
-        try{
+    if (route.component) {
+      if (route.component === 'Layout') {
+        route.component = Layout
+      } else {
+        try {
           route.component = _import(route.component)
-        }catch(error){
-          console.log(error);
+        } catch (error) {
+          console.log(error)
           Message.error('Please contact the administrator to modify or delete the non-existent component path.')
         }
       }
     }
-    if(route.children && route.children.length){
-      route.children = generateRoutes(route.children);
+    if (route.children && route.children.length) {
+      route.children = generateRoutes(route.children)
     }
-    return true;
+    return true
   })
-  return asyncRouters;
+  return asyncRouters
 }

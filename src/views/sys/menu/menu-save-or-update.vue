@@ -5,11 +5,11 @@
     :visible.sync="visible"
   >
     <el-form
+      ref="dataForm"
       :model="dataForm"
       :rules="dataRule"
-      ref="dataForm"
-      @keyup.enter.native="dataFormSubmit()"
       label-width="140px"
+      @keyup.enter.native="dataFormSubmit()"
     >
       <el-form-item
         label="Type"
@@ -18,8 +18,8 @@
         <el-radio-group v-model="dataForm.type" :disabled="dataForm.id !== 0">
           <el-radio
             v-for="(type, index) in typeList"
-            :label="index"
             :key="index"
+            :label="index"
           >{{ type }}</el-radio>
         </el-radio-group>
       </el-form-item>
@@ -30,7 +30,7 @@
         <el-input
           v-model="dataForm.name"
           :placeholder="typeList[dataForm.type] + ' name'"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         label="Parent menu"
@@ -42,16 +42,15 @@
           trigger="click"
         >
           <el-tree
+            ref="menuListTree"
             :data="menuList"
             :props="menuListTreeProps"
             node-key="id"
-            ref="menuListTree"
-            @current-change="menuListTreeCurrentChangeHandle"
             :default-expand-all="true"
             :highlight-current="true"
             :expand-on-click-node="false"
-          >
-          </el-tree>
+            @current-change="menuListTreeCurrentChangeHandle"
+          />
         </el-popover>
         <el-input
           v-model="dataForm.parentName"
@@ -59,7 +58,7 @@
           :readonly="true"
           placeholder="Select the parent menu"
           class="menu-list__input"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         v-if="dataForm.type !== 2"
@@ -69,7 +68,7 @@
         <el-input
           v-model="dataForm.path"
           placeholder="Menu path"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         v-if="dataForm.type === 2"
@@ -79,7 +78,7 @@
         <el-input
           v-model="dataForm.perms"
           placeholder="Multiple separated by comma, E.g: sys:user:page,sys:user:save"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         label="Order number"
@@ -90,7 +89,7 @@
           controls-position="right"
           :min="0"
           label="Order number"
-        ></el-input-number>
+        />
       </el-form-item>
       <el-form-item
         v-if="dataForm.type !==2"
@@ -116,8 +115,8 @@
                   <el-button
                     v-for="(item, index) in iconList"
                     :key="index"
-                    @click="iconActiveHandle(item)"
                     :class="{ 'is-active': item === dataForm.icon }"
+                    @click="iconActiveHandle(item)"
                   >
                     <svg-icon :icon-class="item" />
                   </el-button>
@@ -130,7 +129,7 @@
               :readonly="true"
               placeholder="Menu icon"
               class="icon-list__input"
-            ></el-input>
+            />
           </el-col>
           <el-col
             :span="2"
@@ -141,10 +140,10 @@
               effect="light"
             >
               <div slot="content">Recommend using SVG files, please see <a
-                  href="https://github.com/Seeeeck/fast-admin-vue/blob/master/README.md"
-                  target="_blank"
-                >fast-admin-vue</a> for details</div>
-              <i class="el-icon-warning"></i>
+                href="https://github.com/Seeeeck/fast-admin-vue/blob/master/README.md"
+                target="_blank"
+              >fast-admin-vue</a> for details</div>
+              <i class="el-icon-warning" />
             </el-tooltip>
           </el-col>
         </el-row>
@@ -168,172 +167,172 @@ import {
   listMenusTree,
   updateMenu,
   saveMenu,
-  getMenu,
-} from "@/api/sys/menu";
+  getMenu
+} from '@/api/sys/menu'
 export default {
   data() {
     var validatePath = (rule, value, callback) => {
       if (this.dataForm.type === 1 && !/\S/.test(value)) {
-        callback(new Error("Menu path cannot be empty."));
+        callback(new Error('Menu path cannot be empty.'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       visible: false,
-      typeList: ["Catalog", "Menu", "Button"],
+      typeList: ['Catalog', 'Menu', 'Button'],
       dataForm: {
         id: 0,
         type: 1,
-        name: "",
+        name: '',
         parentId: 0,
-        parentName: "",
-        path: "",
-        perms: "",
+        parentName: '',
+        path: '',
+        perms: '',
         orderNum: 0,
-        icon: "",
-        hidden: false,
+        icon: '',
+        hidden: false
       },
       iconList: [],
       dataRule: {
         name: [
           {
             required: true,
-            message: "Menu name cannot be empty",
-            trigger: "blur",
-          },
+            message: 'Menu name cannot be empty',
+            trigger: 'blur'
+          }
         ],
         parentName: [
           {
             required: true,
-            message: "Parent menu cannot be empty",
-            trigger: "change",
-          },
+            message: 'Parent menu cannot be empty',
+            trigger: 'change'
+          }
         ],
-        path: [{ validator: validatePath, trigger: "blur" }],
+        path: [{ validator: validatePath, trigger: 'blur' }]
       },
       menuList: [
         {
           id: 0,
-          name: "Top menu",
-          children: [],
-        },
+          name: 'Top menu',
+          children: []
+        }
       ],
       menuListTreeProps: {
-        label: "name",
-        children: "children",
-      },
-    };
+        label: 'name',
+        children: 'children'
+      }
+    }
   },
   mounted() {
     this.iconList = require
-      .context("@/icons/svg/", false, /.svg$/)
+      .context('@/icons/svg/', false, /.svg$/)
       .keys()
-      .map((icon) => icon.substring(2, icon.length - 4));
+      .map((icon) => icon.substring(2, icon.length - 4))
   },
   methods: {
     init(id) {
-      this.dataForm.id = id || 0;
-      listMenusTree({ op: "less", noButtonType: true }).then((response) => {
-        this.visible = true;
-        this.menuList[0].children = response.data;
+      this.dataForm.id = id || 0
+      listMenusTree({ op: 'less', noButtonType: true }).then((response) => {
+        this.visible = true
+        this.menuList[0].children = response.data
         this.$nextTick(() => {
-          this.$refs['dataForm'].resetFields();
+          this.$refs['dataForm'].resetFields()
           if (this.dataForm.id) {
             getMenu(id).then((response) => {
-              this.dataForm.id = response.data.id;
-              this.dataForm.type = response.data.type;
-              this.dataForm.name = response.data.name;
-              this.dataForm.parentId = response.data.parentId;
-              this.dataForm.path = response.data.path;
-              this.dataForm.perms = response.data.perms;
-              this.dataForm.orderNum = response.data.orderNum;
-              this.dataForm.icon = response.data.icon;
-              this.menuListTreeSetCurrentNode();
-            });
+              this.dataForm.id = response.data.id
+              this.dataForm.type = response.data.type
+              this.dataForm.name = response.data.name
+              this.dataForm.parentId = response.data.parentId
+              this.dataForm.path = response.data.path
+              this.dataForm.perms = response.data.perms
+              this.dataForm.orderNum = response.data.orderNum
+              this.dataForm.icon = response.data.icon
+              this.menuListTreeSetCurrentNode()
+            })
           } else {
-            this.menuListTreeSetCurrentNode();
+            this.menuListTreeSetCurrentNode()
           }
-        });
-      });
+        })
+      })
     },
     // 菜单树选中
     menuListTreeCurrentChangeHandle(data, node) {
-      this.dataForm.parentId = data.id;
-      this.dataForm.parentName = data.name;
+      this.dataForm.parentId = data.id
+      this.dataForm.parentName = data.name
       getMenu(data.id)
         .then((response) => {
           if (response.data && response.data.path) {
-            this.dataForm.path = response.data.path + "/";
+            this.dataForm.path = response.data.path + '/'
           } else {
-            this.dataForm.path = "";
+            this.dataForm.path = ''
           }
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // 菜单树设置当前选中节点
     menuListTreeSetCurrentNode() {
-      this.$refs.menuListTree.setCurrentKey(this.dataForm.parentId);
+      this.$refs.menuListTree.setCurrentKey(this.dataForm.parentId)
       this.dataForm.parentName = (this.$refs.menuListTree.getCurrentNode() ||
-        {})["name"];
+        {})['name']
     },
     // 图标选中
     iconActiveHandle(iconName) {
-      this.dataForm.icon = iconName;
+      this.dataForm.icon = iconName
     },
     // 表单提交
     dataFormSubmit() {
-      this.$refs["dataForm"].validate((valid) => {
+      this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          let menu = {
+          const menu = {
             id: this.dataForm.id || undefined,
             type: this.dataForm.type,
             name: this.dataForm.name,
             parentId: this.dataForm.parentId,
-            orderNum: this.dataForm.orderNum,
-          };
+            orderNum: this.dataForm.orderNum
+          }
           if (this.dataForm.type === 0 || this.dataForm.type === 1) {
-            menu.icon = this.dataForm.icon;
-            menu.hidden = this.dataForm.hidden;
-            menu.path = this.dataForm.path;
+            menu.icon = this.dataForm.icon
+            menu.hidden = this.dataForm.hidden
+            menu.path = this.dataForm.path
           } else {
-            menu.perms = this.dataForm.perms;
-            menu.hidden = true;
+            menu.perms = this.dataForm.perms
+            menu.hidden = true
           }
           if (!this.dataForm.id) {
             saveMenu(menu)
               .then(() => {
                 this.$message({
-                  message: "Success",
-                  type: "success",
+                  message: 'Success',
+                  type: 'success',
                   duration: 1000,
                   onClose: () => {
-                    this.visible = false;
-                    this.$emit("refreshDataList");
-                  },
-                });
+                    this.visible = false
+                    this.$emit('refreshDataList')
+                  }
+                })
               })
-              .catch((error) => {});
+              .catch(() => {})
           } else {
             updateMenu(menu)
               .then(() => {
                 this.$message({
-                  message: "Success",
-                  type: "success",
+                  message: 'Success',
+                  type: 'success',
                   duration: 1000,
                   onClose: () => {
-                    this.visible = false;
-                    this.$emit("refreshDataList");
-                  },
-                });
+                    this.visible = false
+                    this.$emit('refreshDataList')
+                  }
+                })
               })
-              .catch((error) => {});
+              .catch(() => {})
           }
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss">

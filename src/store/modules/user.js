@@ -1,6 +1,6 @@
 import { login, logout, getInfo } from '@/api/sys/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter,constantRoutes } from '@/router'
+import { resetRouter, constantRoutes } from '@/router'
 
 const getDefaultState = () => {
   return {
@@ -10,7 +10,7 @@ const getDefaultState = () => {
     menus: '',
     permissions: '',
     routes: constantRoutes,
-    id: '',
+    id: ''
   }
 }
 
@@ -35,12 +35,12 @@ const mutations = {
   SET_PERMISSIONS: (state, permissions) => {
     state.permissions = permissions
   },
-  SET_ROUTES: (state,routes) => {
+  SET_ROUTES: (state, routes) => {
     state.routes = constantRoutes.concat(routes)
   },
   SET_ID: (state, id) => {
     state.id = id
-  },
+  }
 }
 
 const actions = {
@@ -68,7 +68,7 @@ const actions = {
           return reject('Verification failed, please Login again.')
         }
 
-        const { id,username, avatar,menus,permissions } = data
+        const { id, username, avatar, menus, permissions } = data
         menus.push({ path: '*', redirect: '/404', hidden: true })
         commit('SET_NAME', username)
         commit('SET_AVATAR', avatar)
@@ -105,7 +105,7 @@ const actions = {
       resolve()
     })
   },
-  setRoutes({commit},routes){
+  setRoutes({ commit }, routes) {
     commit('SET_ROUTES', routes)
   }
 }

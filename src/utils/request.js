@@ -10,7 +10,7 @@ const service = axios.create({
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000, // request timeout
   paramsSerializer: params => {
-    return qs.stringify(params, {indices: false});
+    return qs.stringify(params, { indices: false })
   }
 })
 

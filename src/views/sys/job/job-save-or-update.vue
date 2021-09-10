@@ -2,20 +2,21 @@
   <el-dialog
     :title="!dataForm.id ? 'Add' : 'Update'"
     :close-on-click-modal="false"
-    :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="150px">
-    <el-form-item label="Bean name" prop="beanName">
-      <el-input v-model="dataForm.beanName" placeholder="Bean name"></el-input>
-    </el-form-item>
-    <el-form-item label="Params" prop="params">
-      <el-input v-model="dataForm.params" placeholder="Params"></el-input>
-    </el-form-item>
-    <el-form-item label="Cron expression" prop="cronExpression">
-      <el-input v-model="dataForm.cronExpression" placeholder="Cron expression"></el-input>
-    </el-form-item>
-    <el-form-item label="Remark" prop="remark">
-      <el-input v-model="dataForm.remark" placeholder="Remark"></el-input>
-    </el-form-item>
+    :visible.sync="visible"
+  >
+    <el-form ref="dataForm" :model="dataForm" :rules="dataRule" label-width="150px" @keyup.enter.native="dataFormSubmit()">
+      <el-form-item label="Bean name" prop="beanName">
+        <el-input v-model="dataForm.beanName" placeholder="Bean name" />
+      </el-form-item>
+      <el-form-item label="Params" prop="params">
+        <el-input v-model="dataForm.params" placeholder="Params" />
+      </el-form-item>
+      <el-form-item label="Cron expression" prop="cronExpression">
+        <el-input v-model="dataForm.cronExpression" placeholder="Cron expression" />
+      </el-form-item>
+      <el-form-item label="Remark" prop="remark">
+        <el-input v-model="dataForm.remark" placeholder="Remark" />
+      </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">Cancel</el-button>
@@ -25,9 +26,9 @@
 </template>
 
 <script>
-import { getScheduleJob,saveScheduleJob,updateScheduleJob } from '@/api/sys/job'
+import { getScheduleJob, saveScheduleJob, updateScheduleJob } from '@/api/sys/job'
 export default {
-  data () {
+  data() {
     return {
       visible: false,
       dataForm: {
@@ -35,7 +36,7 @@ export default {
         beanName: '',
         params: '',
         cronExpression: '',
-        remark: '',
+        remark: ''
       },
       dataRule: {
         beanName: [
@@ -49,60 +50,60 @@ export default {
     }
   },
   methods: {
-    init (id) {
+    init(id) {
       this.dataForm.id = id || 0
       this.visible = true
       this.$nextTick(() => {
-        this.$refs['dataForm'].resetFields();
+        this.$refs['dataForm'].resetFields()
         if (this.dataForm.id) {
           getScheduleJob(this.dataForm.id).then(response => {
-            this.dataForm.id = response.data.id;
-            this.dataForm.beanName = response.data.beanName;
-            this.dataForm.params = response.data.params;
-            this.dataForm.cronExpression = response.data.cronExpression;
-            this.dataForm.remark = response.data.remark;
-          });
+            this.dataForm.id = response.data.id
+            this.dataForm.beanName = response.data.beanName
+            this.dataForm.params = response.data.params
+            this.dataForm.cronExpression = response.data.cronExpression
+            this.dataForm.remark = response.data.remark
+          })
         }
-      });
+      })
     },
-    dataFormSubmit () {
+    dataFormSubmit() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          let data = {
-          id: this.dataForm.id || undefined,
-          beanName: this.dataForm.beanName,
-          params: this.dataForm.params,
-          cronExpression: this.dataForm.cronExpression,
-          remark: this.dataForm.remark,
-          };
-          if(this.dataForm.id){
+          const data = {
+            id: this.dataForm.id || undefined,
+            beanName: this.dataForm.beanName,
+            params: this.dataForm.params,
+            cronExpression: this.dataForm.cronExpression,
+            remark: this.dataForm.remark
+          }
+          if (this.dataForm.id) {
             updateScheduleJob(data).then((response) => {
               this.$message({
-                message: "Success",
-                type: "success",
+                message: 'Success',
+                type: 'success',
                 duration: 1000,
                 onClose: () => {
-                  this.visible = false;
-                  this.$emit("refreshDataList");
-                },
-              });
-            }).catch((error) => {});
-          }else {
+                  this.visible = false
+                  this.$emit('refreshDataList')
+                }
+              })
+            }).catch(() => {})
+          } else {
             saveScheduleJob(data).then((response) => {
               this.$message({
-                message: "Success",
-                type: "success",
+                message: 'Success',
+                type: 'success',
                 duration: 1000,
                 onClose: () => {
-                  this.visible = false;
-                  this.$emit("refreshDataList");
-                },
-              });
-            }).catch((error) => {});
+                  this.visible = false
+                  this.$emit('refreshDataList')
+                }
+              })
+            }).catch(() => {})
           }
         }
-      });
-    },
+      })
+    }
   }
 }
 </script>

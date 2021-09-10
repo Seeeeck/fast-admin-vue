@@ -39,7 +39,7 @@
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-        
+
       <el-form-item prop="code">
         <span class="svg-container">
           <svg-icon icon-class="captcha" />
@@ -51,24 +51,23 @@
           name="code"
           tabindex="2"
           auto-complete="on"
-          @keyup.enter.native="handleLogin"
           type="text"
+          @keyup.enter.native="handleLogin"
         >
           <template #suffix>
-            <img style="cursor:pointer" :src="image" @click="getCaptcha"/>
-          </template> 
+            <img style="cursor:pointer" :src="image" @click="getCaptcha">
+          </template>
         </el-input>
       </el-form-item>
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
 
     </el-form>
   </div>
 </template>
 
 <script>
-import { captcha } from "@/api/sys/captcha";
+import { captcha } from '@/api/sys/captcha'
 
 export default {
   name: 'Login',
@@ -89,7 +88,7 @@ export default {
       },
       image: '',
       loginRules: {
-        username: [{ required: true, trigger: 'blur'}],
+        username: [{ required: true, trigger: 'blur' }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
@@ -106,14 +105,14 @@ export default {
     }
   },
   created() {
-    this.getCaptcha();
+    this.getCaptcha()
   },
   methods: {
-    getCaptcha(){
+    getCaptcha() {
       captcha().then(res => {
-        const { key, image } = res.data;
-        this.loginForm.key = key;
-        this.image = image;
+        const { key, image } = res.data
+        this.loginForm.key = key
+        this.image = image
       })
     },
     showPwd() {
@@ -134,8 +133,8 @@ export default {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch((error) => {
-            if (error.code === 1101){
-              this.getCaptcha();
+            if (error.code === 1101) {
+              this.getCaptcha()
             }
             this.loading = false
           })

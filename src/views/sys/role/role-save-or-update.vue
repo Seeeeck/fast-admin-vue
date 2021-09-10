@@ -5,11 +5,11 @@
     :visible.sync="visible"
   >
     <el-form
+      ref="dataForm"
       :model="dataForm"
       :rules="dataRule"
-      ref="dataForm"
-      @keyup.enter.native="dataFormSubmit()"
       label-width="100px"
+      @keyup.enter.native="dataFormSubmit()"
     >
       <el-form-item
         label="Role name"
@@ -18,7 +18,7 @@
         <el-input
           v-model="dataForm.roleName"
           placeholder="Role name"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         label="Remark"
@@ -27,21 +27,20 @@
         <el-input
           v-model="dataForm.remark"
           placeholder="Remark"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         size="mini"
         label="permission"
       >
         <el-tree
+          ref="menuListTree"
           :data="menuList"
           :props="menuListTreeProps"
           node-key="id"
-          ref="menuListTree"
           :default-expand-all="true"
           show-checkbox
-        >
-        </el-tree>
+        />
       </el-form-item>
     </el-form>
     <span
@@ -58,122 +57,122 @@
 </template>
 
 <script>
-import { listMenusTree } from "@/api/sys/menu";
-import { getRoleMenuVO, saveRole, updateRole } from "@/api/sys/role";
+import { listMenusTree } from '@/api/sys/menu'
+import { getRoleMenuVO, saveRole, updateRole } from '@/api/sys/role'
 export default {
   data() {
     return {
       visible: false,
       menuList: [],
       menuListTreeProps: {
-        label: "name",
-        children: "children",
+        label: 'name',
+        children: 'children'
       },
       dataForm: {
         id: 0,
-        roleName: "",
-        remark: "",
+        roleName: '',
+        remark: ''
       },
       dataRule: {
         roleName: [
           {
             required: true,
-            message: "Role name cannot be empty",
-            trigger: "blur",
-          },
-        ],
-      },
-    };
+            message: 'Role name cannot be empty',
+            trigger: 'blur'
+          }
+        ]
+      }
+    }
   },
   methods: {
     filterLeafNodes(menuIdList, parentIds) {
       return menuIdList.filter((item) => {
-        return !parentIds.includes(item);
-      });
+        return !parentIds.includes(item)
+      })
     },
     getParentIds(arr, parentIds) {
       arr.forEach((item) => {
         if (item.children && item.children.length > 0) {
-          parentIds.push(item.id);
-          this.getParentIds(item.children, parentIds);
+          parentIds.push(item.id)
+          this.getParentIds(item.children, parentIds)
         }
-      });
+      })
     },
     init(id) {
-      this.dataForm.id = id || 0;
-      this.visible = true;
-      listMenusTree({ op: "less" }).then((response) => {
-        this.menuList = response.data;
+      this.dataForm.id = id || 0
+      this.visible = true
+      listMenusTree({ op: 'less' }).then((response) => {
+        this.menuList = response.data
         this.menuList.filter((item) => {
           if (!item.children || item.children.length === 0) {
-            item.disabled = true;
+            item.disabled = true
           }
-          return true;
-        });
+          return true
+        })
         this.$nextTick(() => {
-          this.$refs["dataForm"].resetFields();
-          this.$refs.menuListTree.setCheckedKeys([]);
+          this.$refs['dataForm'].resetFields()
+          this.$refs.menuListTree.setCheckedKeys([])
           if (this.dataForm.id) {
-            let parentIds = [];
-            this.getParentIds(this.menuList, parentIds);
+            const parentIds = []
+            this.getParentIds(this.menuList, parentIds)
             getRoleMenuVO(this.dataForm.id).then((response) => {
-              this.dataForm.id = response.data.id;
-              this.dataForm.remark = response.data.remark;
-              this.dataForm.roleName = response.data.roleName;
+              this.dataForm.id = response.data.id
+              this.dataForm.remark = response.data.remark
+              this.dataForm.roleName = response.data.roleName
               this.$refs.menuListTree.setCheckedKeys(
                 this.filterLeafNodes(response.data.menuIdList || [], parentIds)
-              );
-            });
+              )
+            })
           }
-        });
-      });
+        })
+      })
     },
 
     // 表单提交
     dataFormSubmit() {
-      this.$refs["dataForm"].validate((valid) => {
+      this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          let role = {
+          const role = {
             id: this.dataForm.id || undefined,
             roleName: this.dataForm.roleName,
             remark: this.dataForm.remark,
             menuIds: [].concat(
               this.$refs.menuListTree.getCheckedKeys(),
               this.$refs.menuListTree.getHalfCheckedKeys()
-            ),
-          };
+            )
+          }
           if (!this.dataForm.id) {
             saveRole(role)
               .then((response) => {
                 this.$message({
-                  message: "Success",
-                  type: "success",
+                  message: 'Success',
+                  type: 'success',
                   duration: 1000,
                   onClose: () => {
-                    this.visible = false;
-                    this.$emit("refreshDataList");
-                  },
-                });
+                    this.visible = false
+                    this.$emit('refreshDataList')
+                  }
+                })
               })
-              .catch((error) => {});
+              .catch(() => {})
           } else {
             updateRole(role)
               .then((response) => {
                 this.$message({
-                  message: "Success",
-                  type: "success",
+                  message: 'Success',
+                  type: 'success',
                   duration: 1000,
                   onClose: () => {
-                    this.visible = false;
-                    this.$emit("refreshDataList");
-                  },
-                });
+                    this.visible = false
+                    this.$emit('refreshDataList')
+                  }
+                })
               })
-              .catch((error) => {});
+              .catch(() => {})
           }
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>

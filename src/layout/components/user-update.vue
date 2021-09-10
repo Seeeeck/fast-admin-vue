@@ -5,11 +5,11 @@
     :visible.sync="visible"
   >
     <el-form
+      ref="dataForm"
       :model="dataForm"
       :rules="dataRule"
-      ref="dataForm"
-      @keyup.enter.native="dataFormSubmit()"
       label-width="160px"
+      @keyup.enter.native="dataFormSubmit()"
     >
       <el-form-item
         label="Password"
@@ -20,7 +20,7 @@
           v-model="dataForm.password"
           type="password"
           placeholder="password"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         label="Comfirm password"
@@ -31,7 +31,7 @@
           v-model="dataForm.comfirmPassword"
           type="password"
           placeholder="Comfirm password"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         label="Email"
@@ -40,7 +40,7 @@
         <el-input
           v-model="dataForm.email"
           placeholder="Email"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         label="Phone number"
@@ -49,17 +49,17 @@
         <el-input
           v-model="dataForm.mobile"
           placeholder="Phone number"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         label="Avatar"
         prop="avatar"
       >
         <el-popover
+          v-model="popoverVisible"
           placement="bottom"
           :width="400"
           trigger="click"
-          v-model:visible="popoverVisible"
         >
           <div class="popover-content">
             <img
@@ -68,14 +68,14 @@
               :src="item.img"
               class="popover-avatar"
               @click="handleAvatarSelected(item)"
-            />
+            >
           </div>
           <template #reference>
             <img
               :src="dataForm.avatar.img"
               class="user-avatar"
               @click="popoverVisible = true"
-            />
+            >
           </template>
         </el-popover>
       </el-form-item>
@@ -94,40 +94,40 @@
 </template>
 
 <script>
-import { isEmail, isMobile } from "@/utils/validate";
-import { getUser, updateOwn } from "@/api/sys/user";
+import { isEmail, isMobile } from '@/utils/validate'
+import { getUser, updateOwn } from '@/api/sys/user'
 export default {
   data() {
     var validatePassword = (rule, value, callback) => {
       if (!this.dataForm.id && !/\S/.test(value)) {
-        callback(new Error("Password cannot be empty."));
+        callback(new Error('Password cannot be empty.'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     var validateComfirmPassword = (rule, value, callback) => {
       if (!this.dataForm.id && !/\S/.test(value)) {
-        callback(new Error("Password cannot be empty."));
+        callback(new Error('Password cannot be empty.'))
       } else if (this.dataForm.password !== value) {
-        callback(new Error("Confirm password is inconsistent with password"));
+        callback(new Error('Confirm password is inconsistent with password'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     var validateEmail = (rule, value, callback) => {
       if (!isEmail(value)) {
-        callback(new Error("Email format error"));
+        callback(new Error('Email format error'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     var validateMobile = (rule, value, callback) => {
       if (!isMobile(value)) {
-        callback(new Error("Malformed phone number"));
+        callback(new Error('Malformed phone number'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       visible: false,
       popoverVisible: false,
@@ -135,98 +135,96 @@ export default {
       roleList: [],
       dataForm: {
         id: 0,
-        password: "",
-        comfirmPassword: "",
-        email: "",
-        mobile: "",
+        password: '',
+        comfirmPassword: '',
+        email: '',
+        mobile: '',
         avatar: {
-            img: "",
-            url: ""
-        },
+          img: '',
+          url: ''
+        }
       },
       dataRule: {
-        password: [{ validator: validatePassword, trigger: "blur" }],
+        password: [{ validator: validatePassword, trigger: 'blur' }],
         comfirmPassword: [
-          { validator: validateComfirmPassword, trigger: "blur" },
+          { validator: validateComfirmPassword, trigger: 'blur' }
         ],
         email: [
-          { required: true, message: "Email cannot be empty", trigger: "blur" },
-          { validator: validateEmail, trigger: "blur" },
+          { required: true, message: 'Email cannot be empty', trigger: 'blur' },
+          { validator: validateEmail, trigger: 'blur' }
         ],
         mobile: [
           {
             required: true,
-            message: "Phone number cannot be empty",
-            trigger: "blur",
+            message: 'Phone number cannot be empty',
+            trigger: 'blur'
           },
-          { validator: validateMobile, trigger: "blur" },
+          { validator: validateMobile, trigger: 'blur' }
         ],
         avatar: [
           {
             required: true,
-            message: "Avatar cannot be empty",
-            trigger: "blur",
-          },
-        ],
-      },
-    };
+            message: 'Avatar cannot be empty',
+            trigger: 'blur'
+          }
+        ]
+      }
+    }
   },
   methods: {
     handleCancel() {
-      this.visible = false;
-      this.popoverVisible = false;
+      this.visible = false
+      this.popoverVisible = false
     },
     handleAvatarSelected(filePath) {
-      this.dataForm.avatar = filePath;
-      this.popoverVisible = false;
+      this.dataForm.avatar = filePath
+      this.popoverVisible = false
     },
     init() {
-      this.dataForm.id = this.$store.getters.user_id;
-      let imgs = require.context("@/assets/avatar/", false, /.(png|jpg|gif)$/)
+      this.dataForm.id = this.$store.getters.user_id
+      const imgs = require.context('@/assets/avatar/', false, /.(png|jpg|gif)$/)
       this.avatars = imgs.keys().map((key) => {
-         return {url: "@/assets/avatar/"+key.substring(2),img: imgs(key)} 
+        return { url: '@/assets/avatar/' + key.substring(2), img: imgs(key) }
       })
-      console.log(this.avatars);
-      this.visible = true;
+      this.visible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].resetFields();
-        this.popoverVisible = false;
+        this.$refs['dataForm'].resetFields()
+        this.popoverVisible = false
         getUser(this.dataForm.id).then((response) => {
-          this.dataForm.email = response.data.email;
-          this.dataForm.mobile = response.data.mobile;
-          this.dataForm.avatar = this.avatars.find(avatar => avatar.url === response.data.avatar);
-        });
-      });
+          this.dataForm.email = response.data.email
+          this.dataForm.mobile = response.data.mobile
+          this.dataForm.avatar = this.avatars.find(avatar => avatar.url === response.data.avatar)
+        })
+      })
     },
-    // 表单提交
     dataFormSubmit() {
-      this.$refs["dataForm"].validate((valid) => {
+      this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          let user = {
+          const user = {
             id: this.dataForm.id,
             password: this.dataForm.password || undefined,
             email: this.dataForm.email,
             mobile: this.dataForm.mobile,
-            avatar: this.dataForm.avatar.url,
-          };
+            avatar: this.dataForm.avatar.url
+          }
           updateOwn(user)
             .then((response) => {
               this.$message({
-                message: "Success",
-                type: "success",
+                message: 'Success',
+                type: 'success',
                 duration: 1000,
                 onClose: () => {
-                  this.visible = false;
-                  this.$emit("resetAvatar");
-                },
-              });
+                  this.visible = false
+                  this.$emit('resetAvatar')
+                }
+              })
             })
-            .catch((error) => {});
+            .catch(() => {})
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 <style scoped>
 .user-avatar {

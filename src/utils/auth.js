@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import store from "@/store"
+import store from '@/store'
 
 const TokenKey = 'fast_admin_token'
 
@@ -15,7 +15,7 @@ export function removeToken() {
   return Cookies.remove(TokenKey)
 }
 
-export function isAuth(token){
+export function isAuth(token) {
   const permissions = store.getters.permissions
-  return permissions.includes('ROLE_ADMIN') || permissions.includes(token);
+  return permissions.includes('ROLE_ADMIN') || permissions.includes(token)
 }

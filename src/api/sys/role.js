@@ -8,14 +8,12 @@ export function pageRoles(params) {
   })
 }
 
-
 export function getRole(id) {
   return request({
     url: '/sys/role/' + id,
-    method: 'get',
+    method: 'get'
   })
 }
-
 
 export function saveRole(data) {
   return request({
@@ -25,7 +23,6 @@ export function saveRole(data) {
   })
 }
 
-
 export function updateRole(data) {
   return request({
     url: '/sys/role',
@@ -33,7 +30,6 @@ export function updateRole(data) {
     data
   })
 }
-
 
 export function deleteRoles(ids) {
   return request({
@@ -45,17 +41,16 @@ export function deleteRoles(ids) {
   })
 }
 
-
 export function listRoles() {
   return request({
     url: '/sys/role',
-    method: 'get',
+    method: 'get'
   })
 }
 
 export function getRoleMenuVO(id) {
   return request({
-    url: '/sys/role/role-menu/'+ id,
-    method: 'get',
+    url: '/sys/role/role-menu/' + id,
+    method: 'get'
   })
 }

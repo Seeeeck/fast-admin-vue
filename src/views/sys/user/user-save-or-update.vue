@@ -5,23 +5,23 @@
     :visible.sync="visible"
   >
     <el-form
+      ref="dataForm"
       :model="dataForm"
       :rules="dataRule"
-      ref="dataForm"
-      @keyup.enter.native="dataFormSubmit()"
       label-width="160px"
+      @keyup.enter.native="dataFormSubmit()"
     >
       <el-form-item
         label="Username"
         prop="username"
       >
-        <span style="font-size:20px;padding-left:10px" v-if="dataForm.id !== 0">{{dataForm.username}}</span>
+        <span v-if="dataForm.id !== 0" style="font-size:20px;padding-left:10px">{{ dataForm.username }}</span>
         <el-input
+          v-else
           v-model="dataForm.username"
           placeholder="Username"
-          v-else
-        ></el-input>
-        
+        />
+
       </el-form-item>
       <el-form-item
         label="Password"
@@ -32,7 +32,7 @@
           v-model="dataForm.password"
           type="password"
           placeholder="password"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         label="Comfirm password"
@@ -43,7 +43,7 @@
           v-model="dataForm.comfirmPassword"
           type="password"
           placeholder="Comfirm password"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         label="Email"
@@ -52,7 +52,7 @@
         <el-input
           v-model="dataForm.email"
           placeholder="Email"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         label="Phone number"
@@ -61,7 +61,7 @@
         <el-input
           v-model="dataForm.mobile"
           placeholder="Phone number"
-        ></el-input>
+        />
       </el-form-item>
       <el-form-item
         label="Role"
@@ -101,146 +101,146 @@
 </template>
 
 <script>
-import { isEmail, isMobile } from "@/utils/validate";
-import { listRoles } from "@/api/sys/role";
-import { getUserRoleVO, saveUser, updateUser } from "@/api/sys/user";
+import { isEmail, isMobile } from '@/utils/validate'
+import { listRoles } from '@/api/sys/role'
+import { getUserRoleVO, saveUser, updateUser } from '@/api/sys/user'
 export default {
   data() {
     var validatePassword = (rule, value, callback) => {
       if (!this.dataForm.id && !/\S/.test(value)) {
-        callback(new Error("Password cannot be empty."));
+        callback(new Error('Password cannot be empty.'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     var validateComfirmPassword = (rule, value, callback) => {
       if (!this.dataForm.id && !/\S/.test(value)) {
-        callback(new Error("Password cannot be empty."));
+        callback(new Error('Password cannot be empty.'))
       } else if (this.dataForm.password !== value) {
-        callback(new Error("Confirm password is inconsistent with password"));
+        callback(new Error('Confirm password is inconsistent with password'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     var validateEmail = (rule, value, callback) => {
       if (!isEmail(value)) {
-        callback(new Error("Email format error"));
+        callback(new Error('Email format error'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     var validateMobile = (rule, value, callback) => {
       if (!isMobile(value)) {
-        callback(new Error("Malformed phone number"));
+        callback(new Error('Malformed phone number'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       visible: false,
       roleList: [],
       dataForm: {
         id: 0,
-        username: "",
-        password: "",
-        comfirmPassword: "",
-        email: "",
-        mobile: "",
+        username: '',
+        password: '',
+        comfirmPassword: '',
+        email: '',
+        mobile: '',
         roleIdList: [],
-        enable: true,
+        enable: true
       },
       dataRule: {
         username: [
           {
             required: true,
-            message: "Username cannot be empty",
-            trigger: "blur",
-          },
+            message: 'Username cannot be empty',
+            trigger: 'blur'
+          }
         ],
-        password: [{ validator: validatePassword, trigger: "blur" }],
+        password: [{ validator: validatePassword, trigger: 'blur' }],
         comfirmPassword: [
-          { validator: validateComfirmPassword, trigger: "blur" },
+          { validator: validateComfirmPassword, trigger: 'blur' }
         ],
         email: [
-          { required: true, message: "Email cannot be empty", trigger: "blur" },
-          { validator: validateEmail, trigger: "blur" },
+          { required: true, message: 'Email cannot be empty', trigger: 'blur' },
+          { validator: validateEmail, trigger: 'blur' }
         ],
         mobile: [
           {
             required: true,
-            message: "Phone number cannot be empty",
-            trigger: "blur",
+            message: 'Phone number cannot be empty',
+            trigger: 'blur'
           },
-          { validator: validateMobile, trigger: "blur" },
-        ],
-      },
-    };
+          { validator: validateMobile, trigger: 'blur' }
+        ]
+      }
+    }
   },
   methods: {
     init(id) {
-      this.dataForm.id = id || 0;
+      this.dataForm.id = id || 0
       listRoles().then((response) => {
-        this.roleList = response.data;
-        this.visible = true;
+        this.roleList = response.data
+        this.visible = true
         this.$nextTick(() => {
-          this.$refs["dataForm"].resetFields();
+          this.$refs['dataForm'].resetFields()
           if (this.dataForm.id) {
             getUserRoleVO(this.dataForm.id).then((response) => {
-              this.dataForm.username = response.data.username;
-              this.dataForm.email = response.data.email;
-              this.dataForm.mobile = response.data.mobile;
-              this.dataForm.roleIdList = response.data.roleIdList || [];
-              this.dataForm.enable = response.data.enable;
-            });
+              this.dataForm.username = response.data.username
+              this.dataForm.email = response.data.email
+              this.dataForm.mobile = response.data.mobile
+              this.dataForm.roleIdList = response.data.roleIdList || []
+              this.dataForm.enable = response.data.enable
+            })
           }
-        });
-      });
+        })
+      })
     },
     // 表单提交
     dataFormSubmit() {
-      this.$refs["dataForm"].validate((valid) => {
+      this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          let user = {
+          const user = {
             id: this.dataForm.id || undefined,
             username: this.dataForm.username,
             password: this.dataForm.password || undefined,
             email: this.dataForm.email,
             mobile: this.dataForm.mobile,
             enable: this.dataForm.enable,
-            roleIds: this.dataForm.roleIdList,
-          };
+            roleIds: this.dataForm.roleIdList
+          }
           if (!this.dataForm.id) {
             saveUser(user)
               .then((response) => {
                 this.$message({
-                  message: "Success",
-                  type: "success",
+                  message: 'Success',
+                  type: 'success',
                   duration: 1000,
                   onClose: () => {
-                    this.visible = false;
-                    this.$emit("refreshDataList");
-                  },
-                });
+                    this.visible = false
+                    this.$emit('refreshDataList')
+                  }
+                })
               })
-              .catch((error) => {});
+              .catch(() => {})
           } else {
             updateUser(user)
               .then((response) => {
                 this.$message({
-                  message: "Success",
-                  type: "success",
+                  message: 'Success',
+                  type: 'success',
                   duration: 1000,
                   onClose: () => {
-                    this.visible = false;
-                    this.$emit("refreshDataList");
-                  },
-                });
+                    this.visible = false
+                    this.$emit('refreshDataList')
+                  }
+                })
               })
-              .catch((error) => {});
+              .catch(() => {})
           }
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>

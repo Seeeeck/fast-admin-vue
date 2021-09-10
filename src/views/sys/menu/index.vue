@@ -24,16 +24,14 @@
         header-align="center"
         min-width="150"
         label="Name"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="parentName"
         header-align="center"
         align="center"
         width="120"
         label="Parent Menu"
-      >
-      </el-table-column>
+      />
       <el-table-column
         header-align="center"
         align="center"
@@ -74,8 +72,7 @@
         width="80"
         align="center"
         label="Order"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="path"
         header-align="center"
@@ -83,8 +80,7 @@
         width="150"
         show-overflow-tooltip
         label="Menu path"
-      >
-      </el-table-column>
+      />
       <el-table-column
         prop="perms"
         header-align="center"
@@ -92,8 +88,7 @@
         min-width="150"
         show-overflow-tooltip
         label="Permission"
-      >
-      </el-table-column>
+      />
       <el-table-column
         fixed="right"
         header-align="center"
@@ -121,15 +116,18 @@
       v-if="addOrUpdateVisible"
       ref="addOrUpdate"
       @refreshDataList="getDataList"
-    ></add-or-update>
+    />
   </div>
 </template>
 
 <script>
-import { isAuth } from "@/utils/auth";
-import AddOrUpdate from "./menu-save-or-update";
-import { listMenusTree, deleteMenu } from "@/api/sys/menu";
+import { isAuth } from '@/utils/auth'
+import AddOrUpdate from './menu-save-or-update'
+import { listMenusTree, deleteMenu } from '@/api/sys/menu'
 export default {
+  components: {
+    AddOrUpdate
+  },
   data() {
     return {
       dataForm: {},
@@ -142,62 +140,59 @@ export default {
         update: this.isAuth('sys:menu:update'),
         delete: this.isAuth('sys:menu:delete')
       }
-    };
-  },
-  components: {
-    AddOrUpdate,
+    }
   },
   created() {
-    this.getDataList();
+    this.getDataList()
   },
   methods: {
     // 获取数据列表
     getDataList() {
       if (this.auth.read) {
-        this.dataListLoading = true;
-        listMenusTree({ op: "all" })
+        this.dataListLoading = true
+        listMenusTree({ op: 'all' })
           .then((response) => {
-            this.dataList = response.data;
-            this.dataListLoading = false;
+            this.dataList = response.data
+            this.dataListLoading = false
           })
-          .catch(() => (this.dataListLoading = false));
+          .catch(() => (this.dataListLoading = false))
       } else {
         this.$message.error(
           "You don't have required permission to perform this action."
-        );
+        )
       }
     },
     // 新增 / 修改
     addOrUpdateHandle(id) {
-      this.addOrUpdateVisible = true;
+      this.addOrUpdateVisible = true
       this.$nextTick(() => {
-        this.$refs.addOrUpdate.init(id);
-      });
+        this.$refs.addOrUpdate.init(id)
+      })
     },
     // 删除
     deleteHandle(id) {
-      this.$confirm(`Do you want to delete [id=${id}]?`, "Delete", {
-        confirmButtonText: "Yes",
-        cancelButtonText: "No",
-        type: "warning",
+      this.$confirm(`Do you want to delete [id=${id}]?`, 'Delete', {
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+        type: 'warning'
       })
         .then(() => {
           deleteMenu(id)
             .then((response) => {
               this.$message({
-                message: "Success",
-                type: "success",
+                message: 'Success',
+                type: 'success',
                 duration: 1000,
                 onClose: () => {
-                  this.getDataList();
-                },
-              });
+                  this.getDataList()
+                }
+              })
             })
-            .catch(() => {});
+            .catch(() => {})
         })
-        .catch(() => {});
+        .catch(() => {})
     },
-    isAuth,
-  },
-};
+    isAuth
+  }
+}
 </script>

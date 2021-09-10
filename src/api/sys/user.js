@@ -22,7 +22,7 @@ export function logout() {
   })
 }
 
-export function pageUsers(params){
+export function pageUsers(params) {
   return request({
     url: '/sys/user/page',
     method: 'get',
@@ -30,23 +30,21 @@ export function pageUsers(params){
   })
 }
 
-
-export function getUser(id){
+export function getUser(id) {
   return request({
-    url: '/sys/user/'+id,
-    method: 'get',
+    url: '/sys/user/' + id,
+    method: 'get'
   })
 }
 
-export function getUserRoleVO(id){
+export function getUserRoleVO(id) {
   return request({
-    url: '/sys/user/user-role/'+id,
-    method: 'get',
+    url: '/sys/user/user-role/' + id,
+    method: 'get'
   })
 }
 
-
-export function saveUser(data){
+export function saveUser(data) {
   return request({
     url: '/sys/user',
     method: 'post',
@@ -54,8 +52,7 @@ export function saveUser(data){
   })
 }
 
-
-export function updateUser(data){
+export function updateUser(data) {
   return request({
     url: '/sys/user',
     method: 'put',
@@ -63,7 +60,7 @@ export function updateUser(data){
   })
 }
 
-export function updateOwn(data){
+export function updateOwn(data) {
   return request({
     url: '/sys/user/own',
     method: 'put',
@@ -71,13 +68,11 @@ export function updateOwn(data){
   })
 }
 
-
-export function deleteUsers(ids){
+export function deleteUsers(ids) {
   return request({
     url: '/sys/user/batch',
     method: 'delete',
-    params: {ids}
+    params: { ids }
   })
 }
-
 
